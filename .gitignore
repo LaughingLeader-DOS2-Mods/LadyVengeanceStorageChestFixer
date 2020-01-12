@@ -4,22 +4,16 @@ SourceControlGenerator.json
 
 # Levels
 ######################
-Mods/PlayerChestFixer_947ff25c-956b-400b-88aa-379e0a72411d/Levels/*
-Mods/PlayerChestFixer_947ff25c-956b-400b-88aa-379e0a72411d/Globals/*
-Editor/Mods/PlayerChestFixer_947ff25c-956b-400b-88aa-379e0a72411d/Levels/*
+#Mods/PlayerChestFixer_947ff25c-956b-400b-88aa-379e0a72411d/Levels/*
+#Mods/PlayerChestFixer_947ff25c-956b-400b-88aa-379e0a72411d/Globals/*
+#Editor/Mods/PlayerChestFixer_947ff25c-956b-400b-88aa-379e0a72411d/Levels/*
 
 # Story files        #
 ######################
 *.div
 *.raw
-story_orphanqueries_ignore.txt
 Mods/PlayerChestFixer_947ff25c-956b-400b-88aa-379e0a72411d/Story/Dialogs/Autosave/*
 Mods/PlayerChestFixer_947ff25c-956b-400b-88aa-379e0a72411d/Story/Dialogs/Recovered/*
-
-# Asset Folders      #
-######################
-Public/PlayerChestFixer_947ff25c-956b-400b-88aa-379e0a72411d/Assets/*
-#Public/PlayerChestFixer_947ff25c-956b-400b-88aa-379e0a72411d/GUI/*
 
 # Editor files       #
 ######################
@@ -45,12 +39,12 @@ story.debugInfo
 *.tga
 *.png
 *.ttf
-*.lsb
-*.lsf
-*.lsfx
-*.lsefx
+#*.lsb
+#*.lsf
+#*.lsfx
+#*.lsefx
 #*.lsx
-*.lsmg
+#*.lsmg
 
 # Logs               #
 ######################
