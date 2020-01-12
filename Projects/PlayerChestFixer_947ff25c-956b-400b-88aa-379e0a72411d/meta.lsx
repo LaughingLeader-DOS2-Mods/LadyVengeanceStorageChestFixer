@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<save>
+    <header version="2" />
+    <version major="3" minor="6" revision="6" build="0" />
+    <region id="MetaData">
+        <node id="root">
+            <attribute id="Module" value="947ff25c-956b-400b-88aa-379e0a72411d" type="23" />
+            <attribute id="Name" value="PlayerChestFixer" type="23" />
+            <attribute id="Type" value="Add-on" type="23" />
+            <attribute id="UUID" value="464256a8-ed13-40d7-9370-929efd3af57a" type="23" />
+        </node>
+    </region>
+</save>

@@ -1,0 +1,145 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+LLPLAYERCHEST_InitReassignment();
+KBSECTION
+PROC
+LLPLAYERCHEST_InitReassignment()
+THEN
+SysClear("DB_LLPLAYERCHEST_PlayerChests_Chest", 2);
+DB_LLPLAYERCHEST_PlayerChests_Chest((ITEMGUID)ITEMGUID_S_LVHub_PlayerChest_000_217e353f-6512-4808-aa11-3ec5cc06df49, (ITEMGUID)ITEMGUID_S_LVHub_FixedPlayerChest_01_77f1963d-d163-4856-b868-40380623c245);
+DB_LLPLAYERCHEST_PlayerChests_Chest(ITEMGUID_S_LVHub_PlayerChest_001_18d2f084-cc6e-4890-878c-6c0e1ec3b1f2, ITEMGUID_S_LVHub_FixedPlayerChest_02_3c583ea9-a6a3-4d93-96d1-2c0cb2f58680);
+DB_LLPLAYERCHEST_PlayerChests_Chest(ITEMGUID_S_LVHub_PlayerChest_002_df8ac858-679e-45d8-861a-6439980db2f4, ITEMGUID_S_LVHub_FixedPlayerChest_03_f74c6879-9319-41ec-92df-7e52ecd103d5);
+DB_LLPLAYERCHEST_PlayerChests_Chest(ITEMGUID_S_LVHub_PlayerChest_003_2ef015b9-79cb-44dd-b895-ab58fe2c8d86, ITEMGUID_S_LVHub_FixedPlayerChest_04_af54b1f9-93e0-4767-96d4-75eedda69684);
+
+PROC
+LLPLAYERCHEST_InitReassignment()
+AND
+DB_LLPLAYERCHEST_PlayerChests_Chest(_Original, _GlobalNew)
+THEN
+LLPLAYERCHEST_UpdateChest(_Original, _GlobalNew);
+
+PROC
+LLPLAYERCHEST_InitReassignment()
+THEN
+SysClear("DB_GLO_LVHub_PlayerChests_Host", 1);
+SysClear("DB_GLO_LVHub_PlayerChests_Chest", 1);
+DB_GLO_LVHub_PlayerChests_Chest((ITEMGUID)ITEMGUID_S_LVHub_FixedPlayerChest_01_77f1963d-d163-4856-b868-40380623c245);
+DB_GLO_LVHub_PlayerChests_Chest(ITEMGUID_S_LVHub_FixedPlayerChest_02_3c583ea9-a6a3-4d93-96d1-2c0cb2f58680);
+DB_GLO_LVHub_PlayerChests_Chest(ITEMGUID_S_LVHub_FixedPlayerChest_03_f74c6879-9319-41ec-92df-7e52ecd103d5);
+DB_GLO_LVHub_PlayerChests_Chest(ITEMGUID_S_LVHub_FixedPlayerChest_04_af54b1f9-93e0-4767-96d4-75eedda69684);
+PROC_GLO_LVHub_PlayerChests_InitOnce();
+
+PROC
+LLPLAYERCHEST_UpdateChest((ITEMGUID)_Original, (ITEMGUID)_New)
+AND
+DB_GLO_LVHub_PlayerChests_HostSecondary(_ProfileName, _Original)
+THEN
+NOT DB_GLO_LVHub_PlayerChests_HostSecondary(_ProfileName, _Original);
+DB_GLO_LVHub_PlayerChests_HostSecondary(_ProfileName, _New);
+
+PROC
+LLPLAYERCHEST_UpdateChest((ITEMGUID)_Original, (ITEMGUID)_New)
+AND
+DB_GLO_LVHub_PlayerChests_Client(_ProfileName, _Original)
+THEN
+NOT DB_GLO_LVHub_PlayerChests_Client(_ProfileName, _Original);
+DB_GLO_LVHub_PlayerChests_Client(_ProfileName, _New);
+
+PROC
+LLPLAYERCHEST_UpdateChest((ITEMGUID)_Original, (ITEMGUID)_New)
+AND
+GetPosition(_Original, _x, _y, _z)
+AND
+GetRotation(_Original, _PitchDegree, _YawDegree, _RollDegree)
+AND
+RealProduct(_PitchDegree, 0.0174533, _Pitch)
+AND
+RealProduct(_YawDegree, 0.0174533, _Yaw)
+AND
+RealProduct(_RollDegree, 0.0174533, _Roll)
+THEN
+ItemToTransform(_New, _x, _y, _z, _Pitch, _Yaw, _Roll, 1, NULL_00000000-0000-0000-0000-000000000000);
+MoveAllItemsTo(_Original, _New);
+SetOnStage(_Original, 0);
+
+QRY
+LLPLAYERCHEST_QRY_ChestShouldBeOnStage((ITEMGUID)_Chest)
+AND
+DB_GLO_LVHub_PlayerChests_Client(_ProfileName, _Chest)
+AND
+DB_IsPlayer(_Player)
+AND
+CharacterGetReservedUserID(_Player, _UserID)
+AND
+GetUserProfileID(_UserID, _ProfileName)
+THEN
+DB_NOOP(1);
+
+QRY
+LLPLAYERCHEST_QRY_ChestShouldBeOnStage((ITEMGUID)_Chest)
+AND
+DB_GLO_LVHub_PlayerChests_Host(_Chest)
+THEN
+DB_NOOP(1);
+
+QRY
+LLPLAYERCHEST_QRY_ChestShouldBeOnStage((ITEMGUID)_Chest)
+AND
+NOT DB_GLO_LVHub_PlayerChests_Client(_, _Chest)
+AND
+NOT DB_GLO_LVHub_PlayerChests_Host(_Chest)
+AND
+ContainerGetGoldValue(_Chest, _GoldValue)
+AND
+_GoldValue > 0
+THEN
+DB_NOOP(1);
+
+PROC
+LLPLAYERCHEST_UpdateChest((ITEMGUID)_Original, (ITEMGUID)_New)
+AND
+ObjectIsOnStage(_New, 0)
+AND
+LLPLAYERCHEST_QRY_ChestShouldBeOnStage(_New)
+THEN
+DB_LLPLAYERCHEST_PlayerChests_Temp_ChestUpdated(_New);
+SetOnStage(_New, 1);
+
+PROC
+LLPLAYERCHEST_UpdateChest((ITEMGUID)_Original, (ITEMGUID)_New)
+AND
+NOT DB_LLPLAYERCHEST_PlayerChests_Temp_ChestUpdated(_New)
+AND
+ObjectIsOnStage(_New, 1)
+AND
+NOT LLPLAYERCHEST_QRY_ChestShouldBeOnStage(_New)
+THEN
+SetOnStage(_New, 0);
+
+PROC
+LLPLAYERCHEST_UpdateChest((ITEMGUID)_Original, (ITEMGUID)_New)
+AND
+ObjectIsOnStage(_Original, 1)
+THEN
+SetOnStage(_New, 0);
+
+PROC
+LLPLAYERCHEST_UpdateChest((ITEMGUID)_Original, (ITEMGUID)_New)
+AND
+DB_LLPLAYERCHEST_PlayerChests_Temp_ChestUpdated(_New)
+THEN
+NOT DB_LLPLAYERCHEST_PlayerChests_Temp_ChestUpdated(_New);
+
+IF
+RegionStarted(_Region)
+AND
+DB_CheckLevelStart_PlayerChests(_Region)
+AND
+DB_LLPLAYERCHEST_PlayerChests_Chest(_Original, _New)
+THEN
+LLPLAYERCHEST_UpdateChest(_Original, _New);
+EXITSECTION
+
+ENDEXITSECTION
+ParentTargetEdge "GLO_LVHub_LV_HoE_Main"

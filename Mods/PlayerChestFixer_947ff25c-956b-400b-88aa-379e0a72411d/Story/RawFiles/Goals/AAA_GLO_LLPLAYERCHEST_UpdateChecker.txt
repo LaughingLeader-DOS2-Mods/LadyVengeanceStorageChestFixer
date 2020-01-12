@@ -1,0 +1,18 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+
+KBSECTION
+IF
+RegionStarted(_Region)
+AND
+DB_CheckLevelStart_PlayerChests(_Region)
+AND
+SysCount("DB_LLPLAYERCHEST_PlayerChests_Chest", 2, 0)
+THEN
+LLPLAYERCHEST_InitReassignment();
+GoalCompleted;
+EXITSECTION
+
+ENDEXITSECTION
+ParentTargetEdge "GLO_LVHub_LV_HoE_Main"
