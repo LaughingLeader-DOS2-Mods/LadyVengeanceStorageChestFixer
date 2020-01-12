@@ -12,7 +12,7 @@ This mod hides those original chests and moves all of their items (if any) to ne
 Additionally, these new chests work just like the originals, in that you can send items to them when right clicking on items and selecting "Send to Lady Vengeance".
 
 # Releases
-* [Nexus]()
+* [Nexus](https://www.nexusmods.com/divinityoriginalsin2definitiveedition/mods/214/)
 * [Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=1966757974)
 
 ## Support
