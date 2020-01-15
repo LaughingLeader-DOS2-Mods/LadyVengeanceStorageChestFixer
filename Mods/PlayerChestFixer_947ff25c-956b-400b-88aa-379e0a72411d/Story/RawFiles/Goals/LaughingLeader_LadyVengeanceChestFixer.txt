@@ -7,12 +7,12 @@ KBSECTION
 IF
 GameStarted(_,_)
 AND
-NOT DB_Mods_Registered("LadyVengeanceStorageChestFixer", "LaughingLeader", "1.0.1.0")
+NOT DB_Mods_Registered("LadyVengeanceStorageChestFixer", "LaughingLeader", "1.0.2.0")
 AND
 GlobalGetFlag("LeaderLib_Initialized", _LeaderIsEnabled)
 THEN
-LLPLAYERCHEST_Updater_RemoveOldVersions("1.0.1.0");
-LLPLAYERCHEST_Updater_SetVersion("1.0.1.0", _LeaderIsEnabled);
+LLPLAYERCHEST_Updater_RemoveOldVersions("1.0.2.0");
+LLPLAYERCHEST_Updater_SetVersion("1.0.2.0", _LeaderIsEnabled);
 
 PROC
 LLPLAYERCHEST_Updater_RemoveOldVersions((STRING)_NewVersion)
