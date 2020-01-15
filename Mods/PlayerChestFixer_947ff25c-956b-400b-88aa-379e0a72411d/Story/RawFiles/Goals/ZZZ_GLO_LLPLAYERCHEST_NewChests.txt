@@ -15,13 +15,6 @@ DB_LLPLAYERCHEST_PlayerChests_Chest(ITEMGUID_S_LVHub_PlayerChest_003_2ef015b9-79
 
 PROC
 LLPLAYERCHEST_InitReassignment()
-AND
-DB_LLPLAYERCHEST_PlayerChests_Chest(_Original, _GlobalNew)
-THEN
-LLPLAYERCHEST_UpdateChest(_Original, _GlobalNew);
-
-PROC
-LLPLAYERCHEST_InitReassignment()
 THEN
 SysClear("DB_GLO_LVHub_PlayerChests_Host", 1);
 SysClear("DB_GLO_LVHub_PlayerChests_Chest", 1);
@@ -88,9 +81,26 @@ RealProduct(_YawDegree, 0.0174533, _Yaw)
 AND
 RealProduct(_RollDegree, 0.0174533, _Roll)
 THEN
-ItemToTransform(_New, _x, _y, _z, _Pitch, _Yaw, _Roll, 1, NULL_00000000-0000-0000-0000-000000000000);
-MoveAllItemsTo(_Original, _New);
 SetOnStage(_Original, 0);
+ItemToTransform(_New, _x, _y, _z, _Pitch, _Yaw, _Roll, 1, NULL_00000000-0000-0000-0000-000000000000);
+SetOnStage(_New, 1);
+MoveAllItemsTo(_Original, _New);
+//InventoryLaunchIterator(_Original, "LLPLAYERCHEST_Iterator_MoveToNew", "");
+
+IF
+StoryEvent((ITEMGUID)_Item, "LLPLAYERCHEST_Iterator_MoveToNew")
+AND
+ObjectExists(_Item, 1)
+AND
+ItemIsDestroyed(_Item, 0)
+AND
+GetInventoryOwner(_Item, (ITEMGUID)_Original)
+AND
+DB_LLPLAYERCHEST_PlayerChests_Chest(_Original, _New)
+AND
+ItemGetAmount(_Item, _Amount)
+THEN
+ItemToInventory(_Item, _New, _Amount, 0, 0);
 
 PROC
 LLPLAYERCHEST_UpdateChest((ITEMGUID)_Original, (ITEMGUID)_New)
@@ -193,11 +203,20 @@ THEN
 NOT DB_LLPLAYERCHEST_PlayerChests_Temp_ChestUpdated(_New);
 
 IF
-RegionStarted(_Region)
+GameStarted(_Region, _)
+AND
+NOT DB_LLPLAYERCHEST_InitializedRegion(_Region)
 AND
 DB_CheckLevelStart_PlayerChests(_Region)
+THEN
+DB_LLPLAYERCHEST_InitializedRegion(_Region);
+
+IF
+DB_LLPLAYERCHEST_InitializedRegion(_Region)
 AND
 DB_LLPLAYERCHEST_PlayerChests_Chest(_Original, _New)
+AND
+ObjectExists(_New, 1)
 THEN
 LLPLAYERCHEST_UpdateChest(_Original, _New);
 EXITSECTION
