@@ -46,7 +46,9 @@ DB_LLPLAYERCHEST_FallbackPosition("ARX_Main", ITEMGUID_S_LVHub_PlayerChest_002_d
 DB_LLPLAYERCHEST_FallbackPosition("ARX_Main", ITEMGUID_S_LVHub_PlayerChest_003_2ef015b9-79cb-44dd-b895-ab58fe2c8d86, 387.87213134766, 21.018075942993, 802.05688476563, 0.0, 3.1415939331055, 0.0);
 
 PROC
-LLPLAYERCHEST_Updater_VersionChanged((STRING)_OldVersion, "1.0.1.0")
+LLPLAYERCHEST_Updater_VersionChanged((STRING)_OldVersion, (STRING)_NewVersion)
+AND
+SysCount("DB_LLPLAYERCHEST_FallbackPosition", 8, 0)
 THEN
 LLPLAYERCHEST_InitFallbackPositions();
 
@@ -81,6 +83,11 @@ AND
 _Dist > 0.0
 THEN
 DB_NOOP(1);
+
+PROC
+LLPLAYERCHEST_TeleportChest((ITEMGUID)_Original, (ITEMGUID)_New, 1, (STRING)_Region)
+THEN
+SetOnStage(_Original, 0);
 
 PROC
 LLPLAYERCHEST_TeleportChest((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, (STRING)_Region)
@@ -229,29 +236,38 @@ THEN
 NOT DB_LLPLAYERCHEST_PlayerChests_Temp_ChestUpdated(_New);
 
 QRY
-LLPLAYERCHEST_QRY_ChestNeedsUpdating((ITEMGUID)_Chest, 0, (STRING)_Region)
+LLPLAYERCHEST_QRY_ChestNeedsUpdating((ITEMGUID)_Original, (ITEMGUID)_New, 0, (STRING)_Region)
 AND
-LLPLAYERCHEST_QRY_ChestShouldBeOnStage(_Chest)
+LLPLAYERCHEST_QRY_ChestShouldBeOnStage(_New)
 THEN
 DB_NOOP(1);
 
 QRY
-LLPLAYERCHEST_QRY_ChestNeedsUpdating((ITEMGUID)_Chest, 1, (STRING)_Region)
+LLPLAYERCHEST_QRY_ChestNeedsUpdating((ITEMGUID)_Original, (ITEMGUID)_New, 1, (STRING)_Region)
 AND
-NOT LLPLAYERCHEST_QRY_ChestShouldBeOnStage(_Chest)
+NOT LLPLAYERCHEST_QRY_ChestShouldBeOnStage(_New)
 THEN
 DB_NOOP(1);
 
 QRY
-LLPLAYERCHEST_QRY_ChestNeedsUpdating((ITEMGUID)_Chest, (INTEGER)_OnStage, (STRING)_Region)
+LLPLAYERCHEST_QRY_ChestNeedsUpdating((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_NewOnStage, (STRING)_Region)
 AND
 DB_LLPLAYERCHEST_FallbackPosition(_Region, _Original, _x, _y, _z, _Pitch, _Yaw, _Roll)
 AND
-GetDistanceToPosition(_Chest, _x, _y, _z, _Dist)
+GetDistanceToPosition(_New, _x, _y, _z, _Dist)
 AND
 _Dist > 0.0
 THEN
 DB_NOOP(1);
+
+QRY
+LLPLAYERCHEST_QRY_ChestNeedsUpdating((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_NewOnStage, (STRING)_Region)
+AND
+ObjectExists(_Original, 1)
+AND
+ObjectIsOnStage(_Original, 1)
+THEN
+SetOnStage(_Original, 0);
 
 //REGION UPDATING_CHESTS
 //In existing saves, if a chest is on/offstage when it shouldn't be, clear DB_LLPLAYERCHEST_InitializedRegion for this region.
@@ -266,7 +282,7 @@ DB_LLPLAYERCHEST_PlayerChests_Chest(_Original, _New)
 AND
 ObjectIsOnStage(_New, _OnStage)
 AND
-LLPLAYERCHEST_QRY_ChestNeedsUpdating(_New, _OnStage, _Region)
+LLPLAYERCHEST_QRY_ChestNeedsUpdating(_Original, _New, _OnStage, _Region)
 THEN
 NOT DB_LLPLAYERCHEST_InitializedRegion(_Region);
 
