@@ -55,6 +55,13 @@ THEN
 DB_Mods_ActiveGoal("LadyVengeanceStorageChestFixer", "LaughingLeader", "LaughingLeader_LadyVengeanceChestFixer");
 DB_LeaderUpdater_RegisteredUUID("LadyVengeanceStorageChestFixer", "LaughingLeader", 947ff25c-956b-400b-88aa-379e0a72411d);
 //END_REGION
+
+/* [OSITOOLS_ONLY]
+IF
+TextEventSet("lv_luareset")
+THEN
+NRD_LuaReset(1);
+*/
 EXITSECTION
 
 ENDEXITSECTION

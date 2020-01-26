@@ -69,12 +69,12 @@ NOT DB_GLO_LVHub_PlayerChests_Client(_ProfileName, _Original);
 DB_GLO_LVHub_PlayerChests_Client(_ProfileName, _New);
 
 QRY
-LLPLAYERCHEST_QRY_UseFallbackPosition((ITEMGUID)_Original, (ITEMGUID)_New, 0)
+LLPLAYERCHEST_QRY_UseFallbackPosition((ITEMGUID)_Original, (ITEMGUID)_New, 0, (STRING)_Region)
 THEN
 DB_NOOP(1);
 
 QRY
-LLPLAYERCHEST_QRY_UseFallbackPosition((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists)
+LLPLAYERCHEST_QRY_UseFallbackPosition((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, (STRING)_Region)
 AND
 DB_LLPLAYERCHEST_FallbackPosition(_Region, _Original, _x, _y, _z, _Pitch, _Yaw, _Roll)
 AND
@@ -94,7 +94,7 @@ LLPLAYERCHEST_TeleportChest((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_Origi
 AND
 NOT DB_LLPLAYERCHEST_Temp_ChestTeleported(_New, _)
 AND
-NOT LLPLAYERCHEST_QRY_UseFallbackPosition(_Original, _New, _OriginalExists)
+NOT LLPLAYERCHEST_QRY_UseFallbackPosition(_Original, _New, _OriginalExists, _Region)
 AND
 GetPosition(_Original, _x, _y, _z)
 AND
@@ -114,7 +114,7 @@ LLPLAYERCHEST_TeleportChest((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_Origi
 AND
 NOT DB_LLPLAYERCHEST_Temp_ChestTeleported(_New, _)
 AND
-LLPLAYERCHEST_QRY_UseFallbackPosition(_Original, _New, _OriginalExists)
+LLPLAYERCHEST_QRY_UseFallbackPosition(_Original, _New, _OriginalExists, _Region)
 AND
 DB_LLPLAYERCHEST_FallbackPosition(_Region, _Original, _x, _y, _z, _Pitch, _Yaw, _Roll)
 THEN
@@ -160,18 +160,8 @@ PROC
 LLPLAYERCHEST_UpdateChest((ITEMGUID)_Original, (ITEMGUID)_New, (STRING)_Region)
 AND
 DB_CurrentLevel(_Level)
-AND
-GetPosition(_Original, _x, _y, _z)
-AND
-GetRotation(_Original, _PitchDegree, _YawDegree, _RollDegree)
-AND
-RealProduct(_PitchDegree, 0.0174533, _Pitch)
-AND
-RealProduct(_YawDegree, 0.0174533, _Yaw)
-AND
-RealProduct(_RollDegree, 0.0174533, _Roll)
 THEN
-NRD_LuaCall("LLPLAYERCHEST_Ext_LogPosition", _Level, (STRING)_Original, (STRING)_Pitch, (STRING)_Yaw, (STRING)_Roll);
+NRD_LuaCall("LLPLAYERCHEST_Ext_LogPosition", "DB_LLPLAYERCHEST_FallbackPosition", _Level, (STRING)_Original);
 */
 
 QRY
