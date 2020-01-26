@@ -160,7 +160,8 @@ DB_LastManInCombatKilledBy 2
 DB_LeaderUpdater_RegisteredUUID 3
 DB_Mods_ActiveGoal 3
 DB_LeaderLib_ModApi_RegisterMod 3
-DB_LeaderLib_ModApi_RegisterActiveGoal 3DB_RC_WarOwls_AppearObject 2
+DB_LeaderLib_ModApi_RegisterActiveGoal 3
+DB_RC_WarOwls_AppearObject 2
 DB_IsInDialog 1
 DB_FILM_Effect 3
 DB_FILM_Skills 4
@@ -261,3 +262,4 @@ DB_DW_PaladinWounded 1
 DB_RC_DW_SurpriseDate_Magisters 1
 DB_ARX_Barracks_2ndFloor_Archives_SurfaceTypes 2
 DB_ARX_Pipes_SurfaceTransformations 2
+DB_LLPLAYERCHEST_ObjectFix_Objects 2

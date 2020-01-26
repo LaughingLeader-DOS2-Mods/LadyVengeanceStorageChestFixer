@@ -1,7 +1,6 @@
 Version 1
 SubGoalCombiner SGC_AND
 INITSECTION
-LLPLAYERCHEST_ObjectFix_InitSettings();
 
 KBSECTION
 //862be247-b90f-4ef7-b434-9b15000f5e56
@@ -9,16 +8,6 @@ KBSECTION
 
 //LLPLAYERCHEST_LVHatch_BLD_Ship_Interior_4m_Stair_Down_A_e5c5017f-b3ef-45f8-b624-2476c63e6396
 //ITEMGUID_S_LLPLAYERCHEST_LV_Hatch_TopDeck_86ca2382-c4be-4054-ac96-3120a1dae4b1
-
-PROC
-LLPLAYERCHEST_ObjectFix_InitSettings()
-THEN
-DB_LLPLAYERCHEST_ObjectFix_Objects((ITEMGUID)ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, (ITEMGUID)ITEMGUID_S_LLPLAYERCHEST_LV_Hatch_TopDeck_86ca2382-c4be-4054-ac96-3120a1dae4b1);
-
-DB_LLPLAYERCHEST_ObjectFix_FallbackPosition("LV_HoE_Main", ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, 605.10961914063, 15.529492378235, 537.85455322266, 0.0, 1.5707969665527, 0.0);
-DB_LLPLAYERCHEST_ObjectFix_FallbackPosition("RC_Main", ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, 291.14501953125, 10.343761444092, -40.758567810059, 0.0, 1.5707969665527, 0.0);
-DB_LLPLAYERCHEST_ObjectFix_FallbackPosition("CoS_Main", ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, -5.2846527099609, 10.015913963318, 690.67541503906, 0.0, -0.0085168974474072, 0.0);
-DB_LLPLAYERCHEST_ObjectFix_FallbackPosition("ARX_Main", ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, 105.70185852051, 39.629596710205, 897.49169921875, 1.5122594833374, 1.6407301425934, 1.4771888256073);
 
 //REGION TELEPORTING
 
@@ -38,6 +27,7 @@ _Dist > 0.0
 THEN
 DB_NOOP(1);
 
+/*
 QRY
 LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating((ITEMGUID)_Original, (ITEMGUID)_New, (STRING)_Region, 1)
 AND
@@ -57,9 +47,10 @@ AND
 _Dist > 0.0
 THEN
 DB_NOOP(1);
+*/
 
 QRY
-LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating((ITEMGUID)_Original, (ITEMGUID)_New, (STRING)_Region, 0)
+LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating((ITEMGUID)_Original, (ITEMGUID)_New, (STRING)_Region, (INTEGER)_OriginalExists)
 AND
 DB_LLPLAYERCHEST_ObjectFix_FallbackPosition(_Region, _Original, _x, _y, _z, _Pitch, _Yaw, _Roll)
 AND
@@ -79,6 +70,9 @@ DB_NOOP(1);
 //END_REGION
 
 //REGION TELEPORTING
+
+
+
 PROC
 LLPLAYERCHEST_ObjectFix_Teleport((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, (STRING)_Region)
 AND
@@ -120,6 +114,17 @@ DB_LLPLAYERCHEST_ObjectFix_Temp_Teleported(_New, _Original)
 THEN
 SetOnStage(_Original, 0);
 
+/*
+PROC
+LLPLAYERCHEST_ObjectFix_Teleport((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, (STRING)_Region)
+AND
+DB_LLPLAYERCHEST_ObjectFix_Temp_Teleported(_New, _Original)
+AND
+CharacterGetHostCharacter(_Host)
+THEN
+TeleportTo(_Host, _New);
+*/
+
 PROC
 LLPLAYERCHEST_ObjectFix_Teleport((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, (STRING)_Region)
 AND
@@ -129,39 +134,107 @@ NOT DB_LLPLAYERCHEST_ObjectFix_Temp_Teleported(_New, _Original);
 //END_REGION
 
 IF
-GameStarted(_Level, _)
+GameStarted(_Region, _)
 AND
-DB_LLPLAYERCHEST_ObjectFix_Objects(_Original, _GlobalReplacer)
+DB_LLPLAYERCHEST_ObjectFix_Objects(_Original, _New)
+AND
+ObjectExists(_Original, _OriginalExists)
+THEN
+LLPLAYERCHEST_ObjectFix_CheckForUpdate(_Original, _New, _OriginalExists, _Region);
+
+PROC
+LLPLAYERCHEST_ObjectFix_CheckForUpdate((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, (STRING)_Region)
+AND
+LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating(_Original, _New, _Region, _OriginalExists)
+THEN
+LLPLAYERCHEST_ObjectFix_Teleport(_Original, _New, _OriginalExists, _Region);
+
+//REGION BUG_WORKAROUND_HOE
+IF
+GameStarted(_Region, _)
+AND
+DB_LLPLAYERCHEST_ObjectFix_LadyVengeanceHatch(_Original, _New)
+AND
+ObjectExists(_Original, _OriginalExists)
+THEN
+LLPLAYERCHEST_ObjectFix_Hatch_CheckForUpdate(_Original, _New, _OriginalExists, _Region);
+
+PROC
+LLPLAYERCHEST_ObjectFix_Hatch_CheckForUpdate((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, (STRING)_Region)
+AND
+_Region != "LV_HoE_Main"
+AND
+LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating(_Original, _New, _Region, _OriginalExists)
+THEN
+LLPLAYERCHEST_ObjectFix_Teleport(_Original, _New, _OriginalExists, _Region);
+
+// Second Lady Vengeance Template with the Hall of Echoes effects
+PROC
+LLPLAYERCHEST_ObjectFix_Hatch_CheckForUpdate((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, "LV_HoE_Main")
+AND
+GlobalGetFlag("FTJ_LV_StartHoELevel", 1)
+AND
+GlobalGetFlag("LV_HoE_CanLeaveHoE", 1)
+AND
+LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating(_Original, _New, "LV_HoE_Main_Activated", _OriginalExists)
+THEN
+DB_LLPLAYERCHEST_ObjectFix_Temp_Teleporting(_Original, _New);
+LLPLAYERCHEST_ObjectFix_Teleport(_Original, _New, _OriginalExists, "LV_HoE_Main_Activated");
+
+// The first Lady Vengeance template
+PROC
+LLPLAYERCHEST_ObjectFix_CheckForUpdate((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, "LV_HoE_Main")
+AND
+NOT DB_LLPLAYERCHEST_ObjectFix_Temp_Teleporting(_Original, _New)
+AND
+GlobalGetFlag("LV_HoE_CanLeaveHoE", 0)
+AND
+LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating(_Original, _New, "LV_HoE_Main", _OriginalExists)
+THEN
+LLPLAYERCHEST_ObjectFix_Teleport(_Original, _New, _OriginalExists, "LV_HoE_Main");
+
+PROC
+LLPLAYERCHEST_ObjectFix_CheckForUpdate((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, "LV_HoE_Main")
+AND
+DB_LLPLAYERCHEST_ObjectFix_Temp_Teleporting(_Original, _New)
+THEN
+NOT DB_LLPLAYERCHEST_ObjectFix_Temp_Teleporting(_Original, _New);
+
+//HoE LV is no longer used after this point
+IF
+ObjectFlagSet("QuestUpdate_LV_HoE_Main_EmptyLV", _, _)
+AND
+DB_LLPLAYERCHEST_ObjectFix_LadyVengeanceHatch(_Original, _New)
 AND
 ObjectExists(_Original, _OriginalExists)
 AND
-LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating(_Original, _GlobalReplacer, _Level, _OriginalExists)
+LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating(_Original, _New, "LV_HoE_Main", _OriginalExists)
 THEN
-LLPLAYERCHEST_ObjectFix_Teleport(_Original, _GlobalReplacer, _OriginalExists, _Level);
-
+LLPLAYERCHEST_ObjectFix_Teleport(_Original, _New, _OriginalExists, "LV_HoE_Main");
+//END_REGION
 /*
 IF
-GameStarted(_Level, _)
+GameStarted(_Region, _)
 AND
 ObjectExists(ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, 1)
 AND
 String(ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, _Str)
 THEN
-NRD_LuaCall("LLPLAYERCHEST_Ext_LogPosition", "DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", _Level, _Str);
+NRD_LuaCall("LLPLAYERCHEST_Ext_LogPosition", "DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", _Region, _Str);
 
 IF
 TextEventSet("lv_luareset")
 AND
-DB_CurrentLevel(_Level)
+DB_CurrentLevel(_Region)
 AND
 ObjectExists(ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, 1)
 AND
 String(ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, _Str)
 THEN
-NRD_LuaCall("LLPLAYERCHEST_Ext_LogPosition", "DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", _Level, _Str);
+NRD_LuaCall("LLPLAYERCHEST_Ext_LogPosition", "DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", _Region, _Str);
 */
 
 EXITSECTION
 
 ENDEXITSECTION
-ParentTargetEdge "GLO_LVHub_LV_HoE_Main"
+ParentTargetEdge "Start"
