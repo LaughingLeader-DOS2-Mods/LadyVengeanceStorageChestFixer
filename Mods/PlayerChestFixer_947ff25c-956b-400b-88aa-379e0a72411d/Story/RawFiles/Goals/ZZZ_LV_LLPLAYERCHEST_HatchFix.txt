@@ -1,0 +1,77 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+
+KBSECTION
+//REGION BUG_WORKAROUND_HOE
+QRY
+LLPLAYERCHEST_ObjectFix_LVHatch_OriginalAtFirstTemplate((ITEMGUID)_Original)
+AND
+DB_LLPLAYERCHEST_ObjectFix_FallbackPosition("LV_HoE_Main", _Original, _x, _y, _z, _Pitch, _Yaw, _Roll)
+AND
+GetDistanceToPosition(_Original, _x, _y, _z, _Dist)
+AND
+_Dist <= 1.0
+THEN
+DB_NOOP(1);
+
+IF
+GameStarted("LV_HoE_Main", _)
+AND
+DB_LLPLAYERCHEST_ObjectFix_LadyVengeanceHatch(_Original, _New)
+AND
+DB_LLPLAYERCHEST_ObjectFix_LadyVengeanceHatch_FallbackPosition("LV_HoE_Main", _Original, _x, _y, _z, _Pitch, _Yaw, _Roll)
+AND
+GetDistanceToPosition(_New, _x, _y, _z, _Dist)
+AND
+_Dist > 0.0
+THEN
+ItemToTransform(_New, _x, _y, _z, _Pitch, _Yaw, _Roll, 1, NULL_00000000-0000-0000-0000-000000000000);
+SetOnStage(_New, 0);
+
+IF
+GameStarted("LV_HoE_Main", _)
+AND
+DB_LLPLAYERCHEST_ObjectFix_LadyVengeanceHatch(_Original, _New)
+AND
+ObjectIsOnStage(_New, 0)
+THEN
+LLPLAYERCHEST_ObjectFix_LVHatch_SetNewOnStage(_Original, _New);
+
+//Hatch is at the first ship due to a game bug, after the HoE boat is active
+PROC
+LLPLAYERCHEST_ObjectFix_LVHatch_SetNewOnStage((ITEMGUID)_Original, (ITEMGUID)_New)
+AND
+GlobalGetFlag("FTJ_LV_StartHoELevel", 1)
+AND
+DB_OnlyOnce("LV_HoE_VB_ReturnedToLadyVengeance_Once")
+AND
+LLPLAYERCHEST_ObjectFix_LVHatch_OriginalAtFirstTemplate(_Original)
+THEN
+SetOnStage(_New, 1);
+
+/*
+PROC
+LLPLAYERCHEST_ObjectFix_LVHatch_SetNewOnStage((ITEMGUID)_Original, (ITEMGUID)_New)
+AND
+ObjectIsOnStage(_New, 0)
+AND
+DB_LLPLAYERCHEST_ObjectFix_LadyVengeanceHatch_FallbackPosition("LV_HoE_Main", _Original, _x, _y, _z, _Pitch, _Yaw, _Roll)
+AND
+GetDistanceToPosition(_Original, _x, _y, _z, _Dist)
+AND
+_Dist > 0.0
+THEN
+SetOnStage(_New, 1);
+*/
+
+IF
+RegionEnded("LV_HoE_Main")
+THEN
+GoalCompleted;
+
+//END_REGION
+EXITSECTION
+
+ENDEXITSECTION
+ParentTargetEdge "LadyVengeance"

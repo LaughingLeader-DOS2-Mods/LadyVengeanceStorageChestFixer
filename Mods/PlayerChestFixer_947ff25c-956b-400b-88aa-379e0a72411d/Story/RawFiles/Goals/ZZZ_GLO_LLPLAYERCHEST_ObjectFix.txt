@@ -133,6 +133,7 @@ THEN
 NOT DB_LLPLAYERCHEST_ObjectFix_Temp_Teleported(_New, _Original);
 //END_REGION
 
+/* Disabled for now
 IF
 GameStarted(_Region, _)
 AND
@@ -141,6 +142,7 @@ AND
 ObjectExists(_Original, _OriginalExists)
 THEN
 LLPLAYERCHEST_ObjectFix_CheckForUpdate(_Original, _New, _OriginalExists, _Region);
+*/
 
 PROC
 LLPLAYERCHEST_ObjectFix_CheckForUpdate((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, (STRING)_Region)
@@ -148,70 +150,6 @@ AND
 LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating(_Original, _New, _Region, _OriginalExists)
 THEN
 LLPLAYERCHEST_ObjectFix_Teleport(_Original, _New, _OriginalExists, _Region);
-
-//REGION BUG_WORKAROUND_HOE
-IF
-GameStarted(_Region, _)
-AND
-DB_LLPLAYERCHEST_ObjectFix_LadyVengeanceHatch(_Original, _New)
-AND
-ObjectExists(_Original, _OriginalExists)
-THEN
-LLPLAYERCHEST_ObjectFix_Hatch_CheckForUpdate(_Original, _New, _OriginalExists, _Region);
-
-PROC
-LLPLAYERCHEST_ObjectFix_Hatch_CheckForUpdate((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, (STRING)_Region)
-AND
-_Region != "LV_HoE_Main"
-AND
-LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating(_Original, _New, _Region, _OriginalExists)
-THEN
-LLPLAYERCHEST_ObjectFix_Teleport(_Original, _New, _OriginalExists, _Region);
-
-// Second Lady Vengeance Template with the Hall of Echoes effects
-PROC
-LLPLAYERCHEST_ObjectFix_Hatch_CheckForUpdate((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, "LV_HoE_Main")
-AND
-GlobalGetFlag("FTJ_LV_StartHoELevel", 1)
-AND
-GlobalGetFlag("LV_HoE_CanLeaveHoE", 1)
-AND
-LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating(_Original, _New, "LV_HoE_Main_Activated", _OriginalExists)
-THEN
-DB_LLPLAYERCHEST_ObjectFix_Temp_Teleporting(_Original, _New);
-LLPLAYERCHEST_ObjectFix_Teleport(_Original, _New, _OriginalExists, "LV_HoE_Main_Activated");
-
-// The first Lady Vengeance template
-PROC
-LLPLAYERCHEST_ObjectFix_CheckForUpdate((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, "LV_HoE_Main")
-AND
-NOT DB_LLPLAYERCHEST_ObjectFix_Temp_Teleporting(_Original, _New)
-AND
-GlobalGetFlag("LV_HoE_CanLeaveHoE", 0)
-AND
-LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating(_Original, _New, "LV_HoE_Main", _OriginalExists)
-THEN
-LLPLAYERCHEST_ObjectFix_Teleport(_Original, _New, _OriginalExists, "LV_HoE_Main");
-
-PROC
-LLPLAYERCHEST_ObjectFix_CheckForUpdate((ITEMGUID)_Original, (ITEMGUID)_New, (INTEGER)_OriginalExists, "LV_HoE_Main")
-AND
-DB_LLPLAYERCHEST_ObjectFix_Temp_Teleporting(_Original, _New)
-THEN
-NOT DB_LLPLAYERCHEST_ObjectFix_Temp_Teleporting(_Original, _New);
-
-//HoE LV is no longer used after this point
-IF
-ObjectFlagSet("QuestUpdate_LV_HoE_Main_EmptyLV", _, _)
-AND
-DB_LLPLAYERCHEST_ObjectFix_LadyVengeanceHatch(_Original, _New)
-AND
-ObjectExists(_Original, _OriginalExists)
-AND
-LLPLAYERCHEST_ObjectFix_QRY_ObjectNeedsUpdating(_Original, _New, "LV_HoE_Main", _OriginalExists)
-THEN
-LLPLAYERCHEST_ObjectFix_Teleport(_Original, _New, _OriginalExists, "LV_HoE_Main");
-//END_REGION
 /*
 IF
 GameStarted(_Region, _)

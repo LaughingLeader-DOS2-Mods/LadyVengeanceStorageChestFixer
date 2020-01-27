@@ -3,7 +3,6 @@ SubGoalCombiner SGC_AND
 INITSECTION
 LLPLAYERCHEST_InitSettings();
 LLPLAYERCHEST_InitFallbackPositions();
-
 KBSECTION
 PROC
 LLPLAYERCHEST_InitSettings()
@@ -20,6 +19,8 @@ THEN
 //SysClear("DB_LLPLAYERCHEST_ObjectFix_Objects", 2);
 //LLPLAYERCHEST_Register_Object(ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, ITEMGUID_S_LLPLAYERCHEST_LV_Hatch_TopDeck_86ca2382-c4be-4054-ac96-3120a1dae4b1);
 DB_LLPLAYERCHEST_ObjectFix_LadyVengeanceHatch((ITEMGUID)ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, (ITEMGUID)ITEMGUID_S_LLPLAYERCHEST_LV_Hatch_TopDeck_86ca2382-c4be-4054-ac96-3120a1dae4b1);
+//Ghost Ship spot
+DB_LLPLAYERCHEST_ObjectFix_LadyVengeanceHatch_FallbackPosition("LV_HoE_Main", ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, 324.71212768555, 16.602001190186, 188.87127685547, 0.0, -0.042158611118793, 0.0);
 
 PROC
 LLPLAYERCHEST_Register_Object((ITEMGUID)_Original, (ITEMGUID)_New)
@@ -50,8 +51,6 @@ DB_LLPLAYERCHEST_PlayerChests_FallbackPosition("ARX_Main", ITEMGUID_S_LVHub_Play
 SysClear("DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", 8);
 //Regular spot
 DB_LLPLAYERCHEST_ObjectFix_FallbackPosition("LV_HoE_Main", ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, 605.10961914063, 15.529492378235, 537.85455322266, 0.0, 1.5707969665527, 0.0);
-//Ghost Ship spot
-DB_LLPLAYERCHEST_ObjectFix_FallbackPosition("LV_HoE_Main_Activated", ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, 324.71212768555, 16.602001190186, 188.87127685547, 0.0, -0.042158611118793, 0.0);
 DB_LLPLAYERCHEST_ObjectFix_FallbackPosition("RC_Main", ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, 291.14501953125, 10.343761444092, -40.758567810059, 0.0, 1.5707969665527, 0.0);
 DB_LLPLAYERCHEST_ObjectFix_FallbackPosition("CoS_Main", ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, -5.2846527099609, 10.015913963318, 690.67541503906, 0.0, -0.0085168974474072, 0.0);
 DB_LLPLAYERCHEST_ObjectFix_FallbackPosition("ARX_Main", ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, 105.70185852051, 39.629596710205, 897.49169921875, 1.5122594833374, 1.6407301425934, 1.4771888256073);
@@ -61,12 +60,12 @@ DB_LLPLAYERCHEST_ObjectFix_FallbackPosition("ARX_Main", ITEMGUID_S_LV_DoorTo-1_0
 IF
 GameStarted(_,_)
 AND
-NOT DB_Mods_Registered("LadyVengeanceStorageChestFixer", "LaughingLeader", "1.0.3.0")
+NOT DB_Mods_Registered("LadyVengeanceStorageChestFixer", "LaughingLeader", "1.0.4.0")
 AND
 GlobalGetFlag("LeaderLib_Initialized", _LeaderIsEnabled)
 THEN
-LLPLAYERCHEST_Updater_RemoveOldVersions("1.0.3.0");
-LLPLAYERCHEST_Updater_SetVersion("1.0.3.0", _LeaderIsEnabled);
+LLPLAYERCHEST_Updater_RemoveOldVersions("1.0.4.0");
+LLPLAYERCHEST_Updater_SetVersion("1.0.4.0", _LeaderIsEnabled);
 
 PROC
 LLPLAYERCHEST_Updater_RemoveOldVersions((STRING)_NewVersion)
@@ -77,6 +76,8 @@ _Version != _NewVersion
 THEN
 NOT DB_Mods_Registered("LadyVengeanceStorageChestFixer", "LaughingLeader", _Version);
 LLPLAYERCHEST_Updater_VersionChanged(_Version, _NewVersion);
+LLPLAYERCHEST_InitSettings();
+LLPLAYERCHEST_InitFallbackPositions();
 
 PROC
 LLPLAYERCHEST_Updater_VersionChanged((STRING)_OldVersion, (STRING)_NewVersion)
@@ -110,6 +111,7 @@ DB_Mods_ActiveGoal("LadyVengeanceStorageChestFixer", "LaughingLeader", "Laughing
 DB_LeaderUpdater_RegisteredUUID("LadyVengeanceStorageChestFixer", "LaughingLeader", 947ff25c-956b-400b-88aa-379e0a72411d);
 //END_REGION
 
+/*
 IF
 GameStarted(_Level,_)
 AND
@@ -144,6 +146,7 @@ AND
 String(_Original, _Str)
 THEN
 NRD_LuaCall("LLPLAYERCHEST_Ext_LogPosition", "DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", _Level, _Str);
+*/
 
 /* [OSITOOLS_ONLY]
 IF
@@ -151,6 +154,14 @@ TextEventSet("lv_luareset")
 THEN
 NRD_LuaReset(1);
 */
+
+IF
+RegionStarted("LV_HoE_Main")
+AND
+SysIsCompleted("ZZZ_LV_LLPLAYERCHEST_HatchFix")
+THEN
+SysActivateGoal("ZZZ_LV_LLPLAYERCHEST_HatchFix");
+
 EXITSECTION
 
 ENDEXITSECTION
