@@ -1,11 +1,19 @@
 Version 1
 SubGoalCombiner SGC_AND
 INITSECTION
-LLPLAYERCHEST_InitReassignment();
+
 KBSECTION
+IF
+GameStarted(_,_)
+AND
+NOT DB_LLPLAYERCHEST_InitializedOnce(1)
+THEN
+LLPLAYERCHEST_InitReassignment();
+
 PROC
 LLPLAYERCHEST_InitReassignment()
 THEN
+DB_LLPLAYERCHEST_InitializedOnce(1);
 SysClear("DB_GLO_LVHub_PlayerChests_Host", 1);
 SysClear("DB_GLO_LVHub_PlayerChests_Chest", 1);
 DB_GLO_LVHub_PlayerChests_Chest((ITEMGUID)ITEMGUID_S_LVHub_FixedPlayerChest_01_77f1963d-d163-4856-b868-40380623c245);
@@ -130,7 +138,7 @@ LLPLAYERCHEST_UpdateChest((ITEMGUID)_Original, (ITEMGUID)_New, (STRING)_Region)
 AND
 DB_CurrentLevel(_Level)
 THEN
-NRD_LuaCall("LLPLAYERCHEST_Ext_LogPosition", "DB_LLPLAYERCHEST_PlayerChests_FallbackPosition", _Level, (STRING)_Original);
+NRD_ModCall("LadyVengeanceStorageChestFixer", "LogPosition", "DB_LLPLAYERCHEST_PlayerChests_FallbackPosition", _Level, (STRING)_Original);
 */
 
 QRY
@@ -249,13 +257,22 @@ IF
 GameStarted(_Region, _)
 AND
 NOT DB_LLPLAYERCHEST_InitializedRegion(_Region)
+THEN
+TimerCancel("Timers_LLPLAYERCHEST_InitializeRegion");
+TimerLaunch("Timers_LLPLAYERCHEST_InitializeRegion", 500);
+
+IF
+TimerFinished("Timers_LLPLAYERCHEST_InitializeRegion")
+AND
+DB_CurrentLevel(_Region)
 AND
 DB_CheckLevelStart_PlayerChests(_Region)
 THEN
 DB_LLPLAYERCHEST_InitializedRegion(_Region);
+PROC_LLPLAYERCHEST_InitializeRegion(_Region);
 
-IF
-DB_LLPLAYERCHEST_InitializedRegion(_Region)
+PROC
+PROC_LLPLAYERCHEST_InitializeRegion((STRING)_Region)
 AND
 DB_LLPLAYERCHEST_PlayerChests_Chest(_Original, _New)
 AND
