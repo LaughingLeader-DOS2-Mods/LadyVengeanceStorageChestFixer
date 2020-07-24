@@ -1,5 +1,5 @@
 
-function LLPLAYERCHEST_Ext_LogPosition(prefix, level, obj)
+function LogPosition(prefix, level, obj)
 	local x,y,z = GetPosition(obj)
 	local pitchdegree,yawdegree,rolldegree = GetRotation(obj)
 

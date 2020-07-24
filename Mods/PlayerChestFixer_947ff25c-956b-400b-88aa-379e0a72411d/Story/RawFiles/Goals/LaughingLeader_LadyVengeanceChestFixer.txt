@@ -121,7 +121,7 @@ ObjectExists(_Original, 1)
 AND
 String(_Original, _Str)
 THEN
-NRD_LuaCall("LLPLAYERCHEST_Ext_LogPosition", "DB_LLPLAYERCHEST_PlayerChests_FallbackPosition", _Level, _Str);
+NRD_ModCall("LadyVengeanceStorageChestFixer", "LogPosition", "DB_LLPLAYERCHEST_PlayerChests_FallbackPosition", _Level, _Str);
 
 IF
 GameStarted(_Level, _)
@@ -132,7 +132,7 @@ ObjectExists(_Original, 1)
 AND
 String(_Original, _Str)
 THEN
-NRD_LuaCall("LLPLAYERCHEST_Ext_LogPosition", "DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", _Level, _Str);
+NRD_ModCall("LadyVengeanceStorageChestFixer", "LogPosition", "DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", _Level, _Str);
 
 IF
 CharacterTeleported(_,_,_,_,_,_,_,_,_)
@@ -145,7 +145,7 @@ ObjectExists(_Original, 1)
 AND
 String(_Original, _Str)
 THEN
-NRD_LuaCall("LLPLAYERCHEST_Ext_LogPosition", "DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", _Level, _Str);
+NRD_ModCall("LadyVengeanceStorageChestFixer", "LogPosition", "DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", _Level, _Str);
 */
 
 /* [OSITOOLS_ONLY]

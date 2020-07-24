@@ -158,7 +158,7 @@ ObjectExists(ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, 1)
 AND
 String(ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, _Str)
 THEN
-NRD_LuaCall("LLPLAYERCHEST_Ext_LogPosition", "DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", _Region, _Str);
+NRD_ModCall("LadyVengeanceStorageChestFixer", "LogPosition", "DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", _Region, _Str);
 
 IF
 TextEventSet("lv_luareset")
@@ -169,7 +169,7 @@ ObjectExists(ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, 1)
 AND
 String(ITEMGUID_S_LV_DoorTo-1_001_c1ed9bac-0d35-40c0-bf83-bfc228070098, _Str)
 THEN
-NRD_LuaCall("LLPLAYERCHEST_Ext_LogPosition", "DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", _Region, _Str);
+NRD_ModCall("LadyVengeanceStorageChestFixer", "LogPosition", "DB_LLPLAYERCHEST_ObjectFix_FallbackPosition", _Region, _Str);
 */
 
 EXITSECTION
