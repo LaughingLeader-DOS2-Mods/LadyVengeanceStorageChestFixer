@@ -168,9 +168,9 @@ NOT DB_GLO_LVHub_PlayerChests_Client(_, _Chest)
 AND
 NOT DB_GLO_LVHub_PlayerChests_Host(_Chest)
 AND
-ContainerGetGoldValue(_Chest, _GoldValue)
+ItemGetGoldValue(_Chest, _Value)
 AND
-_GoldValue > 0
+_Value > 0
 THEN
 DB_NOOP(1);
 
@@ -239,9 +239,7 @@ SetOnStage(_Original, 0);
 //REGION UPDATING_CHESTS
 //In existing saves, if a chest is on/offstage when it shouldn't be, clear DB_LLPLAYERCHEST_InitializedRegion for this region.
 IF
-SavegameLoading(_,_,_,_)
-AND
-DB_CurrentLevel(_Region)
+GameStarted(_Region, _)
 AND
 DB_LLPLAYERCHEST_InitializedRegion(_Region)
 AND
@@ -255,6 +253,8 @@ NOT DB_LLPLAYERCHEST_InitializedRegion(_Region);
 
 IF
 GameStarted(_Region, _)
+AND
+IsGameLevel(_Region, 1)
 AND
 NOT DB_LLPLAYERCHEST_InitializedRegion(_Region)
 THEN
